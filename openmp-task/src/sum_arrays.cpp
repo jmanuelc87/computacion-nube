@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <omp.h>
 
-#define N 1000000
-#define C 1000
+#include <random>
+
+#define N 1000000000
 
 /**
  * Prints the first N items of the array
@@ -14,7 +15,7 @@ void print(_Float16 *arr, int length)
     printf("[");
     for (int i = 0; i < length; i++)
     {
-        printf("%f", arr[i]);
+        printf("%.02f", arr[i]);
         if (i != length - 1)
         {
             printf(", ");
@@ -25,25 +26,30 @@ void print(_Float16 *arr, int length)
 
 int main()
 {
-    _Float16 a[N], b[N], c[N];
-    int i, chunk = C;
+    _Float16 *a = new _Float16[N];
+    _Float16 *b = new _Float16[N];
+    _Float16 *c = new _Float16[N];
+    int i;
 
+    std::mt19937 gen;
+    std::uniform_real_distribution<float> prob(-13, 101);
+
+#pragma omp parallel for shared(a, b) schedule(static)
     for (size_t i = 0; i < N; i++)
     {
-        a[i] = rand() % 13;
-        b[i] = rand() % 101;
+        a[i] = prob(gen);
+        b[i] = prob(gen);
     }
 
     double start = omp_get_wtime();
 
-#pragma omp parallel for shared(a, b, c) schedule(static, C)
+#pragma omp parallel for shared(a, b, c) schedule(static)
     for (i = 0; i < N; i++)
     {
         c[i] = a[i] + b[i];
     }
 
     double end = omp_get_wtime();
-
 
     print(a, 10);
     print(b, 10);
