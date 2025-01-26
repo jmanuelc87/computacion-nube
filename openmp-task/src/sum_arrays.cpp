@@ -28,7 +28,7 @@ int main()
 {
     _Float16 *a = new _Float16[N];
     _Float16 *b = new _Float16[N];
-    _Float16 *c = new _Float16[N];
+    float *c = new float[N];
     int i;
 
     std::mt19937 gen;
@@ -56,6 +56,10 @@ int main()
     print(c, 10);
 
     printf("Processing array size %d and the total runtime is %f\n", N, end - start);
+
+    delete[] a;
+    delete[] b;
+    delete[] c;
 
     return 0;
 }
